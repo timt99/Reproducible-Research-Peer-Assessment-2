@@ -37,7 +37,7 @@ bunzip2("StormData.csv.bz2")
 
 ### Then we read the data and generate a csv file. We also get the dimension of the data read in.  
 
-```{ r, echo= TRUE}
+```{r, echo= TRUE}
 
 Storm_data <- read.csv("StormData.csv")
 dim(Storm_data)
@@ -48,25 +48,36 @@ dim(Storm_data)
 ### There are 902297 rows and 37 columns total in this dataset. The events in the database start in the year 1950 and end in November 2011.  Since in the earlier years of the database, there are generally fewer events recorded, and most are likely due to a lack of good records.  We would like to analyze data only for recent years.
 
 ## Exploring the data
-```{ r, echo= TRUE}
+```{r, echo= TRUE}
 head(Storm_data, n= 3)
 
 Storm_data$YEAR <- as.numeric(format(as.Date(Storm_data$BGN_DATE, format = "%m/%d/%Y %H:%M:%S"), "%Y"))
 
-hist(Storm_data$YEAR, col= "blue", breaks = 40)
-
 
 ```
+
+## Histogram 1
+
+```{r, Histogram, echo=TRUE}
+hist(Storm_data$YEAR, col= "blue", breaks = 40)
+
+```
+
 
 ### Based on the above histogram, we see that the number of events begins to increase from 1990 to 2011. Thus, we subset the data from 1990 to 2011 to get the most of our data for complete analysis. 
 
 ## Subset our data from 1990 to 2011
 
-```{ r, echo=TRUE}
+```{r, echo=TRUE}
 Storm_data <- Storm_data[Storm_data$YEAR >= 1995, ]
 
-dim(Storm_data)
 
+```
+
+### Dimension of data
+```{r, echo=TRUE}
+
+dim(Storm_data)
 
 ```
 
@@ -76,7 +87,7 @@ dim(Storm_data)
 
 ### In this section, we will check the number of fatalities and injuries that are caused by the severe weather events. We would like to get the first 15 most severe types of weather events.
 
-```{ r, echo=TRUE}
+```{r, echo=TRUE}
 
 sort_Most <- function(keyName, top = 15, dataset= Storm_data)
 {   index <- which(colnames(dataset) == keyName)
@@ -101,7 +112,7 @@ sort_Most <- function(keyName, top = 15, dataset= Storm_data)
   
 ###  Convert property damage and crop damage into comparable numerical forms according to the meaning of units described in the code book(Storm Events). Both PROPDMGEXP and CROPDMGEXP columns record a multiplier for each observation where we have Hundred(H), Thousand(K), Million (M), and Billion (B).
 
-```{ r, echo= TRUE}
+```{r, echo= TRUE}
 
  convert <- function(dataset = Storm_data, keyName, newFieldName) {
     totalLen <- dim(dataset)[2]
@@ -138,17 +149,26 @@ crop_damage <- sort_Most("cropDamage", dataset = Storm_data)
 
 ### The impact on public health is shown below by two sorted lists of severe weather events by number of people badly affected.
 
-```{ r, echo= TRUE}
+### List of fatalities with respect to weather conditions from extreme cases to less extreme cases
+```{r, echo= TRUE}
 
 fatalities
+
+
+```
+
+### List of injuries with respect to weather conditions from extreme to less extreme
+```{r, echo=TRUE}
 injuries
 
 ```
 
-### Graphs of total fatalities and total injuries affected by these severe weather events
-### Plots showing the number of fatalities with respect to Severe weather condition
 
-```{ r, echo= TRUE}
+### Graphs of total fatalities and total injuries affected by these severe weather events
+
+
+```{r, Panel Plot1,  echo= TRUE}
+
 
 g_fatalities <- ggplot(fatalities, aes(EVTYPE, FATALITIES))
  
@@ -165,29 +185,42 @@ theme(axis.text.x = element_text(angle = 45, hjust = 1))
  labs(title="Total Fatalities by Severe Weather\n Events in the U.S.\n from 1995 - 2011" )+ 
  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
  
- grid.arrange(facilitiesplot, injuriesplot, ncol = 2)
  
+```
 
 
+### Plots showing the number of fatalities with respect to Severe weather condition
+### Panel Plot1
+```{r, Panel plot1, echo=TRUE}
+
+grid.arrange(facilitiesplot, injuriesplot, ncol = 2)
 
 ```
+
 
 ### Based on the plots above, excessive head and tornado cause most fatalities, while tornados cause most injuries in the US from 1995- 2011. 
 ### As for the impact on economy, we got two sorted lists below by the amount money cost by damages.
 
-```{ r, echo= TRUE}
+### List of property damage with respect to weather conditions from extreme to less extreme
+```{r, echo= TRUE}
 
 property_damage
 
-crop_damage 
+```
 
+
+### List of crop damage with respect to weather conditions from extreme to less extreme
+```{r, echo=TRUE}
+
+crop_damage 
 
 ```
 
 
 ### This is a pair of grapsh illustrating total property damage and total crop damage affected by severe events.
 
-``` { r, echo= TRUE}
+
+``` {r, echo= TRUE}
 
 g_property <- ggplot(property_damage, aes(EVTYPE, propertyDamage))
  
@@ -202,8 +235,15 @@ Crop_plot <- g_crop + geom_point(size = 4, col= "blue") + labs(x = "Severe Weath
 labs(y = "NUmber of CROP Damages in US dollars")+ 
 labs(title="Total Crop Damage by\n Events in the U.S.\n from 1995 - 2011" )+ theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
  
-grid.arrange(Property_plot, Crop_plot, ncol = 2)
 
+```
+
+
+### Plots showing the total property and crop damage with respect to the type of severe weather
+### Panel Plot2 
+``` {r, Panel Plot2, echo= TRUE}
+
+grid.arrange(Property_plot, Crop_plot, ncol = 2)
 
 ```
 
@@ -217,7 +257,7 @@ grid.arrange(Property_plot, Crop_plot, ncol = 2)
 
 ## Run and publishing the analysis
 
-```{ r, echo=TRUE}
+```{r, echo=TRUE}
 
 library(knitr)
 knit2html("RePResearchPeerAssessment2.Rmd")
